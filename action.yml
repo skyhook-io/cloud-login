@@ -375,7 +375,7 @@ runs:
         codeartifact_namespace: ${{ inputs.aws_codeartifact_namespace }}
         codeartifact_output_token: ${{ inputs.aws_codeartifact_output_token }}
 
-    # 6) GCP (always via skyhook-io/login-gcp-gke)
+    # 6) GCP (via skyhook-io/login-gcp-gke - uses pre-installed gcloud)
     - name: GCP login
       if: steps.config.outputs.provider == 'gcp'
       uses: skyhook-io/login-gcp-gke@v1
