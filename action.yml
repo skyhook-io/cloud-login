@@ -320,6 +320,11 @@ runs:
           fi
         fi
 
+        # BYOK validation
+        if [[ -n "${{ inputs.kubeconfig }}" && "$PROVIDER" != "other" && -n "$PROVIDER" ]]; then
+          echo "::error::Cannot provide 'kubeconfig' input with provider '$PROVIDER'. Use provider='other' for BYOK kubeconfig, or remove the kubeconfig input to use cloud-native authentication."
+          exit 1
+        fi
         if [[ "$PROVIDER" == "other" ]]; then
           if [[ -z "${{ inputs.kubeconfig }}" && -n "$CLUSTER" ]]; then
             echo "::warning::Provider is 'other' (BYOK) with cluster '$CLUSTER' but no 'kubeconfig' input provided. kubectl commands will fail unless kubeconfig is already configured."
@@ -416,17 +421,31 @@ runs:
 
     # 7.5) BYOK / on-prem: configure kubectl from kubeconfig secret
     - name: Configure kubeconfig (BYOK)
-      if: inputs.kubeconfig != ''
+      if: inputs.kubeconfig != '' && steps.config.outputs.provider == 'other'
       shell: bash
       run: |
         set -Eeuo pipefail
         mkdir -p ~/.kube
-        echo "${{ inputs.kubeconfig }}" | base64 -d > ~/.kube/config
+
+        # Decode kubeconfig with clear error on invalid base64
+        if ! echo "${{ inputs.kubeconfig }}" | base64 -d > ~/.kube/config 2>/tmp/b64err; then
+          echo "::error::Failed to decode 'kubeconfig' input. Ensure the value is base64-encoded. Encode with: cat kubeconfig.yaml | base64"
+          cat /tmp/b64err
+          exit 1
+        fi
         chmod 600 ~/.kube/config
+
+        # Validate kubeconfig is parseable YAML
+        if ! kubectl config view --kubeconfig="$HOME/.kube/config" > /dev/null 2>&1; then
+          echo "::error::The decoded kubeconfig is not a valid kubeconfig file. Check the contents of your KUBECONFIG secret."
+          exit 1
+        fi
+
         echo "✅ Kubeconfig configured from secret"
-        # Verify connectivity
+
+        # Connectivity probe (expected to fail for private clusters or exec-based auth)
         if ! kubectl cluster-info --request-timeout=5s > /dev/null 2>&1; then
-          echo "::warning::Kubeconfig was written but kubectl cluster-info failed. Cluster may not be reachable from this runner."
+          echo "::notice::kubectl cluster-info probe failed — this is expected for private clusters or exec-based auth plugins. If kubectl commands fail in later steps, check cluster reachability and kubeconfig auth."
         fi
 
     # 8) Unified registry login (GHCR / Docker Hub / Quay / Generic)
