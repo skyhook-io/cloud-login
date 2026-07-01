@@ -457,7 +457,7 @@ runs:
          steps.config.outputs.provider == 'quay' ||
          steps.config.outputs.provider == 'registry' ||
          steps.config.outputs.registry_server != '')
-      uses: docker/login-action@v3
+      uses: docker/login-action@v4
       with:
         registry: ${{ steps.config.outputs.registry_server }}
         username: ${{ steps.config.outputs.registry_username != '' && steps.config.outputs.registry_username || (steps.config.outputs.provider == 'github' && github.actor || '') }}
