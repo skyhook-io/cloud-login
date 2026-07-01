@@ -161,7 +161,7 @@ runs:
     - name: Parse image
       id: parse
       if: inputs.image != ''
-      uses: skyhook-io/parse-image-registry@v1
+      uses: skyhook-io/parse-image-registry@abd7825e407c302243928a460e4a1d32986c7272
       with:
         image: ${{ inputs.image }}
 
@@ -372,7 +372,7 @@ runs:
     # 5) AWS login (always via skyhook-io/login-aws)
     - name: AWS login
       if: steps.config.outputs.provider == 'aws'
-      uses: skyhook-io/login-aws@v1
+      uses: skyhook-io/login-aws@8a8bd4beb8cd314c55d1133929b38cf0305482dd
       with:
         aws_region: ${{ steps.config.outputs.location }}
         role_to_assume: ${{ steps.aws-role.outputs.role_arn }}
@@ -394,7 +394,7 @@ runs:
     # 6) GCP (via skyhook-io/login-gcp-gke - uses pre-installed gcloud)
     - name: GCP login
       if: steps.config.outputs.provider == 'gcp'
-      uses: skyhook-io/login-gcp-gke@v1
+      uses: skyhook-io/login-gcp-gke@f5c5bc8d74bd784bd3b8c939371091e0309b2b32
       with:
         credentials_json: ${{ inputs.gcp_credentials_json }}
         workload_identity_provider: ${{ inputs.gcp_workload_identity_provider }}
@@ -408,7 +408,7 @@ runs:
     # 7) Azure (beta) — unified via a Skyhook action
     - name: Azure login
       if: steps.config.outputs.provider == 'azure'
-      uses: skyhook-io/login-azure-aks@v1
+      uses: skyhook-io/login-azure-aks@ed8031833a7b6f13fde588d49c2f99a7bcbdde99
       with:
         subscription_id: ${{ steps.config.outputs.account }}
         resource_group: ${{ inputs.azure_resource_group }}
@@ -457,7 +457,7 @@ runs:
          steps.config.outputs.provider == 'quay' ||
          steps.config.outputs.provider == 'registry' ||
          steps.config.outputs.registry_server != '')
-      uses: docker/login-action@v4
+      uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f
       with:
         registry: ${{ steps.config.outputs.registry_server }}
         username: ${{ steps.config.outputs.registry_username != '' && steps.config.outputs.registry_username || (steps.config.outputs.provider == 'github' && github.actor || '') }}

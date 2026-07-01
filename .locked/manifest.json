@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "docker/login-action@v4": "docker/login-action@dbcb813823bdd20940b903addbd779551569679f",
+    "skyhook-io/login-aws@v1": "skyhook-io/login-aws@8a8bd4beb8cd314c55d1133929b38cf0305482dd",
+    "skyhook-io/login-azure-aks@v1": "skyhook-io/login-azure-aks@ed8031833a7b6f13fde588d49c2f99a7bcbdde99",
+    "skyhook-io/login-gcp-gke@v1": "skyhook-io/login-gcp-gke@f5c5bc8d74bd784bd3b8c939371091e0309b2b32",
+    "skyhook-io/parse-image-registry@v1": "skyhook-io/parse-image-registry@abd7825e407c302243928a460e4a1d32986c7272"
+  },
+  "npm": null,
+  "runner_tools": "Existing runner binaries and consumer build inputs are not snapshotted.",
+  "snapshot": "0502b870720f01a654fc",
+  "source": {
+    "ref": "v1",
+    "repository": "skyhook-io/cloud-login",
+    "sha": "d64734dd2148b8f34f77853c34498b2c5fd3e830"
+  },
+  "tools": {}
+}
